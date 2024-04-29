@@ -2,7 +2,6 @@
 # down to a manageable size for efficiency.
 import os
 from xml.dom import minidom as mdom
-# from utils import frame_to_time
 import pandas as pd
 
 
@@ -160,7 +159,6 @@ def categorize_data(filename):
 
                     if (0 < int(data[3]) < pitch['x']) and (0 < int(data[4]) < pitch['y']):
                         # remove any frames that are outside the pitch borders
-                        # if data[3] <= pitch['x'] and data[4] <= pitch['y']:
                         player_frame = [frame_num, data[0], data[1], data[2], data[3], data[4], data[5]]
                         player_data.append(player_frame)
 
