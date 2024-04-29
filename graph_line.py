@@ -56,5 +56,5 @@ def visualise_intersection_counts(csv_file):
     plt.show()
 
 
-#visualise_mean_distance("mean_dis_before_turnover1.csv")
-visualise_intersection_counts("blocked_numbers2.csv")
+# visualise_mean_distance("mean_dis_before_turnover1.csv")
+# visualise_intersection_counts("blocked_numbers2.csv")
