@@ -157,7 +157,7 @@ def create_linestrings(csv_path):
         # Extract ball's position
         ball_origin = frame_data.iloc[0][["x_ball", "y_ball"]].values
 
-        # Create a LineString from the ball to each player in possession
+        # Creating a LineString from the ball to each player in possession
         linestrings = []
         for _, player in frame_data[frame_data["team_id"] == int(possession_team)].iterrows():
             player_origin = (player["x_player"], player["y_player"])
@@ -199,7 +199,8 @@ def create_circles(csv_file, proportionality_constant=0.8):
         # Store the list of circles for the current frame in the dictionary
         circles_per_frame[frame_num] = circles
 
-    # circles now contains a dictionary of circle geometries for each player not in possession, with radius related to their speed
+    # circles contains a dictionary of circle geometries for each player not in possession, 
+    # with radius related to their speed
     return circles_per_frame
 
 
@@ -307,7 +308,7 @@ def main():
     # extract_frame_nums("blob/mean_dis_before_turnover1.csv", "blob/first_half_before_turnover_frames.csv")
     # extract_matching_rows_and_save("blob/first_half_before_turnover_frames.csv", "blob/previous_3_frames.csv", "blob/blocking_passes_1.csv")
 
-    line_strings = create_linestrings("blob/blocking_passes_2.csv")  # previous_3_frames_clean
+    line_strings = create_linestrings("blob/blocking_passes_2.csv")
     circles = create_circles("blob/blocking_passes_2.csv")
     player_info_df = pd.read_csv("blob/blocking_passes_2.csv")
     blocked_info = summarise_intersections(line_strings, circles, player_info_df)
