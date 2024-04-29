@@ -47,7 +47,6 @@ def process_file(input_path):
 
     except IOError as e:
         print(f"An error occurred while processing the file: {e}")
-        # Handle or log the error as needed
 
     return transitions
 
