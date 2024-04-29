@@ -297,7 +297,7 @@ def summarise_intersections(linestrings_per_frame, circles_per_frame, player_inf
 
 
 def main():
-    # Working
+    # CREATING THE CSVs
     # change_over("data/player_and_ball.csv", "blob/new_heatblob.csv")
     # extract_frame_nums("blob/new_heatblob.csv", "blob/frame_nums.csv")
     # clean_team_id_data("blob/new_heatblob.csv")
@@ -307,8 +307,6 @@ def main():
     # extract_frame_nums("blob/mean_dis_before_turnover1.csv", "blob/first_half_before_turnover_frames.csv")
     # extract_matching_rows_and_save("blob/first_half_before_turnover_frames.csv", "blob/previous_3_frames.csv", "blob/blocking_passes_1.csv")
 
-
-    # # TODO: DOne
     line_strings = create_linestrings("blob/blocking_passes_2.csv")  # previous_3_frames_clean
     circles = create_circles("blob/blocking_passes_2.csv")
     player_info_df = pd.read_csv("blob/blocking_passes_2.csv")
@@ -316,8 +314,6 @@ def main():
 
     flat_data = []
     for frame, (count, team_ids) in blocked_info.items():
-        # Since team_ids is a set, you might want to process it into a string or handle it differently
-        # For simplicity, let's convert it to a string list
         team_ids_str = ', '.join(map(str, team_ids))
         flat_data.append({
             'frame_num': frame,
@@ -331,13 +327,13 @@ def main():
     # Save the DataFrame to a CSV file
     reuseable_Data.to_csv("blob/blocked_numbers2.csv", index=False)
 
+    # UNPACKING CSV
     # csv_file_path = "blob/reuseable_Data.csv"
     # df = pd.read_csv(csv_file_path)
     # blocked_passes = {
     #     frame: group.drop('frame', axis=1).to_dict('records')
     #     for frame, group in df.groupby('frame')
     # }
-
     # heatmap_clean("blob/previous_3_frames_clean.csv", pitch_length, pitch_width, blocked_passes)
 
     print("Done.")
