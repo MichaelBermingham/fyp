@@ -6,4 +6,4 @@ Repos contains three algorithms.
 
 3. Blocking Passes - The Blocking Passes algorithm builds upon the foundations laid by the Team Closeness algorithm, the Blocking Passes experiment examines the availability of passing options for the team in possession prior to the loss of possession, with the hope to offer insights into how defensive pressure and player positioning impact passing lanes and decision-making.
 
-Each of these experiments contribute to a deeper understanding of soccer’s intricate dynamics, providing both theoretical insights and practical applications for both team performance and strategies. Accompanying each experiment is a set of results which detail the empirical findings and their implications for improving aspects such as a player’s influence, the team cohesion and decision-making during possession dynamics.
+Each of these experiments contribute to a deeper understanding of soccer’s intricate dynamics, providing both theoretical insights and practical applications for both team performance and strategies.
