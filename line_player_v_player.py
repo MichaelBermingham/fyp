@@ -36,76 +36,6 @@ def calculate_closeness(input_data):
     return closeness_df
 
 
-# def player_v_player_closeness_calculation(input_data):
-#     closeness_records = []
-#
-#     for frame in input_data["frame_num"].unique():
-#         frame_data = input_data[input_data["frame_num"] == frame]
-#
-#         home_team = frame_data[frame_data["team_id"] == 1]
-#         away_team = frame_data[frame_data["team_id"] == 0]
-#
-#         # Calculating all pairwise distances and store them with player identifiers.
-#         distances = []
-#         for _, home_player in home_team.iterrows():
-#             for _, away_player in away_team.iterrows():
-#                 distance = np.sqrt(
-#                     (home_player["x_player"] - away_player["x_player"]) ** 2 +
-#                     (home_player["y_player"] - away_player["y_player"]) ** 2
-#                 )
-#                 distances.append({
-#                     "frame_num": frame,
-#                     "home_player_id": home_player["player_id"],
-#                     "away_player_id": away_player["player_id"],
-#                     "distance": distance,
-#                     "x_home_player": home_player["x_player"],
-#                     "y_home_player": home_player["y_player"],
-#                     "x_away_player": away_player["x_player"],
-#                     "y_away_player": away_player["y_player"],
-#                     "x_ball": home_player["x_ball"],
-#                     "y_ball": home_player["y_ball"],
-#                     "home_squadNum": home_player["squadNum"],
-#                     "away_squadNum": away_player["squadNum"],
-#                     "team_id": home_player["team_id"]
-#                 })
-#
-#         # Convert to DataFrame to use pandas functionality for finding unique pairs
-#         distances_df = pd.DataFrame(distances)
-#         # Sort by distance to get the closest pairs first
-#         distances_df.sort_values(by="distance", inplace=True)
-#
-#         # Loop through sorted distances and create unique pairings
-#         paired_home_players = set()
-#         paired_away_players = set()
-#         for _, row in distances_df.iterrows():
-#             home_id = row["home_player_id"]
-#             away_id = row["away_player_id"]
-#             # Skip if either player is already paired
-#             if home_id in paired_home_players or away_id in paired_away_players:
-#                 continue
-#
-#             # Add to record and mark as paired
-#             closeness_records.append(row)
-#             paired_home_players.add(home_id)
-#             paired_away_players.add(away_id)
-#
-#     closeness_df = pd.DataFrame(closeness_records)
-#     return closeness_df
-
-#     # Find unique pairs, ensuring each player appears only once in the pairs
-#     unique_pairs = distances_df.drop_duplicates(subset=["home_player_id", "away_player_id"], keep="first")
-#
-#     # Filter out duplicates, prioritizing closer distances, to ensure uniqueness among home and away players
-#     unique_home_pairs = unique_pairs.drop_duplicates(subset="home_player_id", keep="first")
-#     unique_away_pairs = unique_pairs.drop_duplicates(subset="away_player_id", keep="first")
-#     unique_pairs = pd.concat([unique_home_pairs, unique_away_pairs]).drop_duplicates(keep=False)
-#
-#     closeness_records.extend(unique_pairs.to_dict("records"))
-#
-# closeness_df = pd.DataFrame(closeness_records)
-# return closeness_df
-
-
 def calculate_closeness_for_frames(frame_nums_file, input_data_file):
     frame_nums_data = pd.read_csv(frame_nums_file)
     p_b_data = pd.read_csv(input_data_file)
@@ -213,10 +143,6 @@ def five_v_five_heatmap(closeness_df, pitch_length, pitch_width, mean_per_frame)
 
         # Plot players and draw lines between home players and their closest opponents
         for _, row in frame_data.iterrows():
-            # Colour code based on team_id
-            # home_color = "red" if row["team_id"] == 1 else "blue"
-            # away_color = "blue" if row["team_id"] == 0 else "red"
-
             # Home player
             pitch.scatter(row["x_home_player"], row["y_home_player"], ax=ax, s=120, color="red", edgecolors="black",
                           zorder=2)
@@ -280,8 +206,6 @@ def change_over(input_file, output_file):
     # Read the input CSV file
     data = pd.read_csv(input_file)
 
-    # poss_changed = data["poss"].ne(data["poss"].shift()) & (data["inPlay"].shift() == "Dead") & (data["inPlay"] == "Alive")
-
     poss_changed = (data["poss"] != data["poss"].shift()) & (
                 data["inPlay"] == "Alive" != data["inPlay"].shift() == "Dead")
 
@@ -300,13 +224,12 @@ def extract_changes_in_possession(csv_file):
     df = pd.read_csv(csv_file, sep='\t')
 
     # Identify rows where the 'poss' value changes from the previous row
-    # We use shift(-1) to compare each row with the next row
     df['poss_change'] = df['poss'] != df['poss'].shift(-1)
 
     # Filter the DataFrame to include only the rows before a change in possession
     changes_df = df[df['poss_change']]
 
-    # Drop the 'poss_change' column as it's no longer needed
+    # Drop the 'poss_change' column
     changes_df = changes_df.drop(columns=['poss_change'])
     before = changes_df[changes_df['frame_num'] < 1420876]
     after = changes_df[changes_df['frame_num'] > 1443541]
@@ -318,28 +241,21 @@ def extract_changes_in_possession(csv_file):
 def main():
     # data = pd.read_csv("data/player_and_ball.csv")
     # data.sort_values(by="frame_num", inplace=True)
-    # home_alive = data[(data["team_id"] == 0) & (data["inPlay"] == "Alive")]
-    # away_alive = data[(data["team_id"] == 1) & (data["inPlay"] == "Alive")]
-    # home_dead = data[(data["team_id"] == 0) & (data["inPlay"] == "Dead")]
-    # away_dead = data[(data["team_id"] == 1) & (data["inPlay"] == "Dead")]
-    # home_poss = data[(data["team_id"] == 0) & (data["poss"] == "H")]
-    # away_poss = data[(data["team_id"] == 1) & (data["poss"] == "A")]
-    # home_total = data[(data["team_id"] == 0) & (data["inPlay"] == "Alive") & (data["poss"] == "H")]
-    # away_total = data[(data["team_id"] == 1) & (data["inPlay"] == "Alive") & (data["poss"] == "A")]
 
     # Pre-process data to find relevant frames for closeness calculation
     # preprocessed_data = preprocess_for_closeness(data)
 
-    # input CSV file and the output CSV file
+    # Input CSV file and the output CSV file
     # detect_inplay_changes("data/player_and_ball.csv", "inPlay_change.csv")
+    
     # input CSV file and the output CSV file
     # change_over("inPlay_change.csv", "change_over.csv")
 
     # extract_frame_nums("blob/new_heatblob.csv", "blob/frame_nums.csv")
-    # calculate_closeness_for_frames("blob/frame_nums.csv", "data/player_and_ball.csv")
+    # calculate_closeness_for_frames("data/frame_nums.csv", "data/player_and_ball.csv")
+    
     mean_per_frame = calculate_mean_distance_per_frame("blob/closeness_for_frames.csv")
     mean_per_frame.to_csv("blob/mean_distances.csv", index=False, sep="\t")
-    # extract_changes_in_possession("blob/mean_distances.csv")
 
     data_for_mapping = pd.read_csv("blob/closeness_for_frames.csv")
     data_for_mapping.sort_values(by="frame_num", inplace=True)
@@ -347,22 +263,20 @@ def main():
 
     # Calculate closeness for the preprocessed data
     # closeness_df = calculate_closeness(preprocessed_data)
-
     # closeness_df = player_v_player_closeness_calculation(preprocessed_data)
 
-    # Output or further process the closeness_df as required
-    print("player_v_player_closeness_calculation complete. Data:")
+    # print("player_v_player_closeness_calculation complete. Data:")
     # print(closeness_df.head())
 
-    # Save the results to a txt file
+    # Saving the results to a txt file
     # closeness_df.to_csv("closeness_output.txt", index=False, sep="\t")
     # closeness_df.to_csv("player_v_player_closeness_calculation_output.txt", index=False, sep="\t")
 
     # print("Output saved to player_v_player_closeness_calculation_output.txt")
     # print("Generating Heatmap.")
-    # # generate_heatmap(closeness_df)
-    #
-    # #player_v_player_heatmap(closeness_df, pitch_length, pitch_width)
+    # generate_heatmap(closeness_df)
+    
+    # player_v_player_heatmap(closeness_df, pitch_length, pitch_width)
     # print("Heatmap Generated.")
 
 
