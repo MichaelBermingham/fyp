@@ -8,7 +8,6 @@ from preprocess_data import pitch
 
 data = pd.read_csv('data/player_and_ball.csv')
 
-# Separate DataFrames for each scenario allowing easier.
 home_alive = data[(data['team_id'] == 0) & (data['inPlay'] == 'Alive')]
 away_alive = data[(data['team_id'] == 1) & (data['inPlay'] == 'Alive')]
 home_dead = data[(data['team_id'] == 0) & (data['inPlay'] == 'Dead')]
@@ -19,8 +18,7 @@ home_total = data[(data["team_id"] == 0) & (data["inPlay"] == "Alive") & (data["
 away_total = data[(data["team_id"] == 1) & (data["inPlay"] == "Alive") & (data["poss"] == "A")]
 
 def calculate_closeness_2(input_data):
-    # Assuming 'x_ball', 'y_ball', 'x_player', and 'y_player' columns exist
-    # Calculate distance to ball if not already calculated
+    # Calculate distance to ball
     input_data['distance_to_ball'] = np.sqrt((input_data['x_ball'] - input_data['x_player'])**2 + (input_data['y_ball'] - input_data['y_player'])**2)
 
     closeness_records = []
@@ -49,7 +47,7 @@ def calculate_closeness_2(input_data):
 
 
 def calculate_closeness(input_data):
-    # Initialize an empty list to store closeness records
+    # Initialise an empty list to store closeness records
     closeness_records = []
 
     # Group by frame to process each moment in the game separately
@@ -180,7 +178,7 @@ def generate_heatmap(closeness_df):
     pitch = Pitch(pitch_type='custom', pitch_color='#22312b', line_color='white', figsize=(10, 7),
                   pitch_length=105, pitch_width=68, constrained_layout=True, tight_layout=False)
 
-    # Filter for unique frames, but ensure we're only processing the first 10 for performance
+    # Filter for unique frames, but only processing the first 10 for performance
     unique_frames = closeness_df['frame_num'].unique()[:10]
 
     for frame in unique_frames:
@@ -190,7 +188,7 @@ def generate_heatmap(closeness_df):
         # Plot players by team and connect lines to ball
         for team_id in frame_data['team_id'].unique():
             team_data = frame_data[frame_data['team_id'] == team_id]
-            color = 'red' if team_id == 0 else 'blue'  # Assuming 0 is home, 1 is away
+            color = 'red' if team_id == 0 else 'blue'
 
             # Plot players
             pitch.scatter(team_data['x_player'], team_data['y_player'], ax=ax, s=120, color=color, edgecolors='black',
@@ -253,35 +251,30 @@ def generate_heatmap(closeness_df):
         plt.close()
 
 
-# Here we call calculate_closeness with the DataFrame you want to analyze.
-# For example, let's calculate closeness for the home team when they have possession and the play is alive:
 # print("Home info: \n", home_total.head())
 # print(home_total.head())
+
 # print("Away info: \n", away_total.head())
 # print(away_total.head())
+
 # print("Calling calculate_closeness...")
 closeness_df = calculate_closeness(away_total)
 closeness_df.to_csv('closeness_data_away_total.txt', sep=',', index=False)
-#  print("Outputting:\n", closeness_df)
-
+# print("Outputting:\n", closeness_df)
 
 # Mark rows where the ball status changes from 'Dead' to 'Alive'
 data['status_change'] = ((data['inPlay'] == 'Alive') & (data['inPlay'].shift(1) == 'Dead'))
 
-# Find frames where possession changes within 30 frames after being 'Alive'
-# This is a placeholder for logic; you'll need to iterate through 'status_change' marked True
-# and check for possession changes in the subsequent frames (up to 30 frames ahead)
-
-# Placeholder for storing indices where the conditions are met
+# storing indices where the conditions are met
 valid_indices = []
 
-# Iterate through the DataFrame
+# Iterate through DataFrame
 for index, row in data.iterrows():
     if row['status_change']:
         start_frame = row['frame_num']
-        end_frame = start_frame + (30 * 25)  # Assuming 30 frames ahead, increment by 25
+        end_frame = start_frame + (30 * 25)
 
-        # Check for possession change in the next 30 frames
+        # Check for possession change in next 30 frames
         future_frames = data[(data['frame_num'] > start_frame) & (data['frame_num'] <= end_frame)]
         if not future_frames.empty:
             # Check if 'poss' changes within these frames
@@ -290,5 +283,4 @@ for index, row in data.iterrows():
 
 # Filter the DataFrame for the identified valid indices
 filtered_data = data.loc[valid_indices]
-
 
